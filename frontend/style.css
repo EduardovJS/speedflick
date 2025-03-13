@@ -1,0 +1,55 @@
+* {
+  margin: 0;
+}
+
+body {
+  font-family: "Reboto Flex", sans-serif;
+}
+
+.logo {
+  color: #1f2937;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.875rem;
+  font-weight: 900;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.6875rem;
+}
+
+.items-navbar {
+  font-size: 1.5625rem;
+  font-weight: 600;
+  color: #000000;
+  text-decoration: none;
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 1030px;
+  max-width: 1030px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 11px;
+  margin-bottom: 46px;
+}
+
+.hero_section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hero_texts {
+  font-size: 32px;
+  color: #000000;
+}
