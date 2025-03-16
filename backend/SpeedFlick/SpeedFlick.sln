@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeedFlick", "SpeedFlick\SpeedFlick.csproj", "{095C0CAD-B8E7-4054-B462-EBA282879F82}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{095C0CAD-B8E7-4054-B462-EBA282879F82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{095C0CAD-B8E7-4054-B462-EBA282879F82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{095C0CAD-B8E7-4054-B462-EBA282879F82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{095C0CAD-B8E7-4054-B462-EBA282879F82}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {57F916FA-95A4-40E0-BAB6-7C7294DCD73F}
+	EndGlobalSection
+EndGlobal
