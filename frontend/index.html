@@ -12,66 +12,37 @@
     />
     <title>Speed Flick</title>
   </head>
-  <body class="container">
-    <header>
-      <a class="logo" href="#"> SPEED FLICK </a>
-      <nav class="navbar">
-        <a class="items-navbar" href="#">Rank</a>
-        <a class="items-navbar" href="#">Login</a>
-        <a class="items-navbar" href="#">Cadastro</a>
-      </nav>
-    </header>
-    <main>
-      <section>
-        <div class="hero-text">
-          <h1>Teste Sua Velocidade de Clique!</h1>
-          <p>
-            Prepare-se para testar sua agilidade! Você terá 30 segundos para
-            clicar o máximo que puder e conquistar a melhor pontuação. Ao final
-            do teste, veja sua posição no ranking dos 10 melhores!
-          </p>
-          <h1>Está pronto para o desafio?</h1>
-          <p>
-            Clique no botão abaixo para começar o teste e mostrar sua
-            habilidade!
-          </p>
-          <p class="timer">30 segundos</p>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Speed Flick</h1>
+        <p>Clique o mais rápido que puder em 30 segundos!</p>
+      </header>
+      <main>
+        <div id="click-box"></div>
+        <div class="game-info">
+          <p>Cliques: <span id="click-count">0</span></p>
+          <p>Tempo restante: <span id="timer">30</span>s</p>
         </div>
-      </section>
-      <button>clique o mais rápido que conseguir</button>
-    </main>
-    <aside>
-      <h1>Rank</h1>
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">First</th>
-            <th scope="col">Last</th>
-            <th scope="col">Handle</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-          </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td colspan="2">Larry the Bird</td>
-            <td>@twitter</td>
-          </tr>
-        </tbody>
-      </table>
-    </aside>
-    <footer></footer>
+        <button id="login-button">Login com Discord</button>
+      </main>
+      <aside>
+        <h2>Ranking</h2>
+        <ul id="ranking">
+          <li>
+            <img
+              src="https://cdn.discordapp.com/avatars/USER_ID/USER_AVATAR.png"
+              alt="Foto do usuário"
+            />
+            <span>Nome do Usuário</span>
+            <span>100 cliques</span>
+          </li>
+        </ul>
+      </aside>
+      <footer>
+        <p>&copy; 2023 Speed Flick. Todos os direitos reservados.</p>
+      </footer>
+    </div>
+    <script src="script.js"></script>
   </body>
 </html>
