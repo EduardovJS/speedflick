@@ -67,7 +67,6 @@ main {
 
 #click-box:active {
   background-color: white;
-  outline: none;
 }
 
 .game-info {
