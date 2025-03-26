@@ -4,6 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using SpeedFlick.Context;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using System.Net.Http.Headers;
+using System.Text.Json;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,64 +18,69 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// configuração de autenticação
+
 builder.Services.AddAuthentication(options =>
 {
-    // Definindo o esquema de autenticação para o Discord OAuth
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Usando Cookies como esquema principal
-    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Usando cookies também para sign-in
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = "Discord";
 })
-.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-{
-    options.LoginPath = "/api/scores/login"; // Caminho para onde o usuário será redirecionado se não estiver autenticado
-})
-.AddOAuth("Discord", options =>
-{
-    options.ClientId = builder.Configuration["Discord:ClientId"];
-    options.ClientSecret = builder.Configuration["Discord:ClientSecret"];
-    options.CallbackPath = "/api/discord/callback";
-
-    options.AuthorizationEndpoint = "https://discord.com/oauth2/authorize";
-    options.TokenEndpoint = "https://discord.com/api/oauth2/token";
-    options.UserInformationEndpoint = "https://discord.com/api/v10/users/@me";
-
-    // Definindo o escopo da autenticação (informações do usuário)
-    options.Scope.Add("identify");
-
-    options.SaveTokens = true; // Salvar tokens de acesso
-
-    options.Events = new OAuthEvents
+.AddCookie()
+.AddOAuth("Discord",
+    options =>
     {
-        OnCreatingTicket = async context =>
+        options.ClientId = builder.Configuration["Discord:ClientId"];
+        options.ClientSecret = builder.Configuration["Discord:ClientSecret"];
+
+
+        options.AuthorizationEndpoint = "https://discord.com/oauth2/authorize";
+        options.Scope.Add("identify");
+        options.CallbackPath = "/api/autenticar";
+
+        options.TokenEndpoint = "https://discord.com/api/oauth2/token";
+        options.UserInformationEndpoint = "https://discord.com/api/users/@me";
+
+
+        options.ClaimActions.MapJsonKey("id", "id");
+        options.ClaimActions.MapJsonKey("username", "username");
+        options.ClaimActions.MapJsonKey("avatar", "avatar");
+
+        options.Events = new OAuthEvents()
         {
-            // Fazendo a requisição para pegar as informações do usuário no Discord
-            var request = new HttpRequestMessage(HttpMethod.Get, context.Options.UserInformationEndpoint);
-            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", context.AccessToken);
+            OnCreatingTicket = async context =>
+            {
+                // Realiza uma solicitação para o endpoint Get de informações do usuário do Discord 
+                var request = new HttpRequestMessage(HttpMethod.Get, options.UserInformationEndpoint);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
 
-            var response = await context.Backchannel.SendAsync(request, HttpCompletionOption.ResponseContentRead, context.HttpContext.RequestAborted);
-            response.EnsureSuccessStatusCode();
+                // Envia a requesição do request
+                var response = await context.Backchannel.SendAsync(request, context.HttpContext.RequestAborted);
+                response.EnsureSuccessStatusCode();
 
-            // Lendo a resposta JSON com os dados do usuário
-            var user = System.Text.Json.JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
+                // Guarda as informacoes na variavel responseString como uma string JSON
+                var responseString = await response.Content.ReadAsStringAsync();
 
-            // Extraindo os dados necessários
-            var discordId = user.GetProperty("id").GetString();
-            var username = user.GetProperty("username").GetString();
-            var avatarHash = user.GetProperty("avatar").GetString();
+                // Faz a desserializacao e transforma o JSON em um obj
+                var user = JsonSerializer.Deserialize<JsonElement>(responseString);
 
-            // Adicionando os Claims para nome de usuário e avatar
-            context.Identity.AddClaim(new Claim(ClaimTypes.Name, username));
-            context.Identity.AddClaim(new Claim("discord_id", discordId));
-            context.Identity.AddClaim(new Claim("avatar", avatarHash));
+                var userId = user.GetProperty("id").GetString();
+                var username = user.GetProperty("username").GetString();
+                var avatarhash = user.GetProperty("avatar").GetString();
 
-            // Criando a URL do avatar para mostrar a imagem
-            var avatarUrl = $"https://cdn.discordapp.com/avatars/{discordId}/{avatarHash}.png";
-            context.Identity.AddClaim(new Claim("avatar_url", avatarUrl));
-        }
-    };
-});
+                // Mapeamento os dados para os claims 
+                context.Identity.AddClaim(new Claim("id", userId));
+                context.Identity.AddClaim(new Claim("username", username));
+                context.Identity.AddClaim(new Claim("avatar", avatarhash));
 
-// Configurar CORS
+                // Criando a URL de avatar para mostrar a imagem
+                var avatarUrl = $"https://cdn.discordapp.com/avatars/{userId}/{avatarhash}.png";
+                context.Identity.AddClaim(new Claim("avatar_url", avatarUrl));
+
+            }
+        };
+    });
+
+
+// Configuracao CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
@@ -82,17 +91,15 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Configurar Swagger
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Habilitar autenticação e autorização
-app.UseAuthentication(); // Adicione isso
+app.UseAuthentication();
 app.UseAuthorization();
 
-// Configurar Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
